@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Data Forge - Edição Odyssey v5.0 (GitHub)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="ship-launch-overlay" class="ship-launch-overlay">
+        <div class="launch-content">
+            <h1>LANÇAMENTO DA ODYSSEY</h1>
+            <p>Sua sonda de dados está completa e foi lançada na rede global.</p>
+            <p class="launch-bonus">Bônus Permanente: +25% de DPS Global!</p>
+            <button id="close-launch-overlay-button" class="action-button">Continuar</button>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="nebula-canvas" class="canvas-bg"></canvas>
+        <canvas id="starfield-canvas" class="canvas-bg"></canvas>
+    </div>
+    <div id="main-container" class="main-container">
+        <!-- PAINEL ESQUERDO: Status, Nave e Ações -->
+        <div class="left-panel panel">
+            <div id="stats-display">
+                <h1 title="Data"><span id="data-count">0</span> Data</h1>
+                <p style="color: var(--prestige-color);" title="Kernel Cores">Kernel Cores: <span id="kernel-cores-count">0</span> (<span id="prestige-bonus">0</span>% Bônus)</p>
+                <p title="Cliques automáticos por segundo">Cliques automáticos: <span id="auto-clicks-per-sec">0</span>/s</p>
+                <p title="Data gerado passivamente por segundo">DPS Passivo: <span id="dps-count">0</span></p>
+                <p title="Data gerado por cada clique">Data por Clique: <span id="dpc-count">1</span></p>
+                <div id="prestige-progress-container" title="Progresso para o próximo Kernel Core">
+                    <div id="prestige-progress-bar-bg">
+                        <div id="prestige-progress-bar"></div>
+                        <span id="prestige-progress-text"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ship-container">
+                <h3 class="sub-header" style="margin-top: 5px; border-bottom: none;">Nave "Odyssey"</h3>
+                <svg id="odyssey-svg" viewBox="0 0 200 200">
+                    <g id="engine-glow-group" class="ship-part"><path id="engine-glow" d="M 90 160 C 95 180, 105 180, 110 160 Z" /></g>
+                    <g id="ship-hull" class="ship-part"><path d="M 100 20 L 140 120 L 100 150 L 60 120 Z" /></g>
+                    <g id="ship-engine" class="ship-part"><path d="M 80 150 L 70 165 L 130 165 L 120 150" /></g>
+                    <g id="ship-bridge" class="ship-part"><path d="M 100 40 L 120 70 L 80 70 Z" /></g>
+                    <g id="ship-wings" class="ship-part"><path d="M 60 120 L 20 100 L 60 100 M 140 120 L 180 100 L 140 100" /></g>
+                    <g id="ship-plating" class="ship-part"><path d="M 100 75 L 125 110 M 100 75 L 75 110 M 80 125 L 120 125" /></g>
+                    <g id="ship-sensors" class="ship-part"><path d="M 100 20 L 100 10 M 90 25 L 80 15 M 110 25 L 120 15"/></g>
+                </svg>
+            </div>
+
+            <div id="data-orb-container">
+                <div id="data-orb"></div>
+            </div>
+            <p style="font-size: 0.8em; color: var(--secondary-text-color);">Shift+Click para comprar x10.</p>
+            <div id="abilities-container" style="margin-top: auto;">
+                <h4 class="sub-header-alt">Processador de Efeitos</h4>
+                <button id="ability-overclock" class="ability-button">Overclock</button>
+                <button id="ability-datadump" class="ability-button">Data Dump</button>
+            </div>
+            <div id="menu-buttons-container" style="margin-top: 10px;">
+                <button id="main-menu-button" class="menu-button">Menu Principal</button>
+                <button id="prestige-button" class="menu-button prestige-action-button" style="display: none;">Recompilar Sistema</button>
+            </div>
+        </div>
+
+        <div class="middle-panel panel">
+            <h2>Infraestrutura</h2>
+            <div id="buildings-container" class="item-list"></div>
+        </div>
+        
+        <div class="right-panel panel">
+            <h2>Loja de Melhorias</h2>
+            <div id="upgrades-container" class="item-list"></div>
+            <div id="prestige-upgrades-container"></div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="toast-container"></div>
+    <div id="main-modal" class="modal">
+        <div class="modal-content">
+            <div id="tabs" class="tabs">
+                <button class="tab-button" data-tab="ranking-content">Ranking Global</button>
+                <button class="tab-button" data-tab="hall-of-fame-content">Hall da Fama</button>
+                <button class="tab-button" data-tab="achievements-content">Conquistas</button>
+                <button class="tab-button" data-tab="stats-content">Estatísticas</button>
+            </div>
+            <div class="modal-content-inner">
+                <div id="ranking-content" class="tab-content"></div>
+                <div id="hall-of-fame-content" class="tab-content"></div>
+                <div id="achievements-content" class="tab-content"></div>
+                <div id="stats-content" class="tab-content"></div>
+            </div>
+            <button id="close-modal-button" class="menu-button">Fechar</button>
+        </div>
+    </div>
+    <div id="name-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2>Bem-vindo, Hacker.</h2>
+            <p>Insira seu nome de usuário para a HackerNet.</p>
+            <input type="text" id="player-name-input" placeholder="Seu Nome..." maxlength="15">
+            <button id="save-name-button" class="menu-button">Entrar no Sistema</button>
+        </div>
+    </div>
+    
+    <!-- DEV PANEL -->
+    <div id="dev-panel">
+        <h4 style="margin: 0 0 10px 0; text-align: center; color: var(--accent-color);">MODO DEV</h4>
+        <button id="dev-add-data" class="dev-button">+100M Data</button>
+        <button id="dev-add-kernels" class="dev-button">+100 Kernels</button>
+        <button id="dev-reset-cooldowns" class="dev-button">Reset CDs</button>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
