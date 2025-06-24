@@ -8,17 +8,14 @@ Assuma o papel de um hacker construindo uma infraestrutura de dados massiva. Com
 
 O jogo apresenta múltiplos sistemas de progressão, incluindo:
 -   **Edifícios e Melhorias:** Uma árvore de tecnologia clássica de jogos incrementais.
--   **Sistema de Prestígio (Recompilação):** Zere seu progresso em troca de "Kernel Cores", que fornecem bônus permanentes e desbloqueiam novas Eras de jogo, cada uma com um tema visual e animações de fundo únicas.
+-   **Sistema de Prestígio (Recompilação):** Zere seu progresso em troca de "Kernel Cores", que fornecem bônus permanentes e desbloqueiam novas Eras de jogo.
 -   **Evolução Visual:** Veja sua nave e a interface do jogo mudarem de cor e forma à medida que você avança pelas Eras.
 -   **Conquistas:** Desbloqueie bônus permanentes ao atingir marcos importantes.
--   **Login e Placar da Rede (Simulado):** O jogo possui uma interface completa de login e um placar. A lógica é simulada no frontend com `localStorage`, pronta para ser conectada a um backend real.
+-   **Login e Ranking (Simulado):** O jogo possui uma interface completa de login e um placar global. A lógica de API é simulada no frontend com `localStorage`, pronta para ser conectada a um backend real.
 
 ## 🛠️ Como Executar
 
-Por usar módulos JavaScript (`import`/`export`), este projeto precisa ser executado a partir de um servidor web local.
-
--   **Recomendado (VS Code):** Instale a extensão "Live Server" e clique com o botão direito em `index.html` -> "Open with Live Server".
--   **Alternativa (Python):** Navegue até a pasta do projeto no terminal e execute `python -m http.server`. Acesse `http://localhost:8000`.
+Basta abrir o arquivo `index.html` em qualquer navegador moderno.
 
 ## 📁 Estrutura de Arquivos
 

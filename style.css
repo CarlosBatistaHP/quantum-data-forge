@@ -16,7 +16,6 @@
 }
 .theme-cosmic { --bg-color: #100818; --main-text-color: #d88aff; --glow-color: #d88aff; --border-color: #aa55ff; --prestige-color: #ffee77; --button-bg: #4a1f70; --unlocked-color: #d88aff;}
 .theme-singularity { --bg-color: #180808; --main-text-color: #ff8888; --glow-color: #ff5555; --border-color: #cc2222; --prestige-color: #ffddaa; --button-bg: #7d1c1c; --unlocked-color: #ff8888;}
-.theme-black-hole { --bg-color: #000; --main-text-color: #9d72ff; --glow-color: #9d72ff; --border-color: #6343a0; --prestige-color: #ff7e48; --button-bg: #322150; --unlocked-color: #9d72ff;}
 .theme-supernova { --bg-color: #181408; --main-text-color: #ffee77; --glow-color: #ffee77; --border-color: #ffcc00; --prestige-color: #aaddff; --button-bg: #80610d; --unlocked-color: #ffee77;}
 .theme-whitedwarf { --bg-color: #101018; --main-text-color: #ddeeff; --glow-color: #ffffff; --border-color: #bbbbdd; --prestige-color: #ffccff; --button-bg: #5a5a8a; --unlocked-color: #ddeeff;}
 
@@ -25,7 +24,6 @@ body, html { margin: 0; padding: 0; overflow: hidden; background-color: var(--bg
 body { background-image: linear-gradient(rgba(0, 255, 170, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 170, 0.05) 1px, transparent 1px); background-size: 20px 20px; }
 
 /* LAYOUT PRINCIPAL E PAINEIS */
-#background-effects { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
 .canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .canvas-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .main-container { position: relative; display: flex; justify-content: space-between; height: 100vh; padding: 15px; gap: 15px; z-index: 2; }
@@ -55,36 +53,7 @@ h4.sub-header-alt { margin: 0 0 10px; color: var(--secondary-text-color); }
 .click-effect { position: fixed; font-size: 1.2em; font-weight: bold; color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); animation: fadeUpClick 1s forwards; pointer-events: none; z-index: 100; transform: translateX(-50%); }
 @keyframes fadeUpClick { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -60px); } }
 
-/* ANIMAÇÕES DE FUNDO DAS ERAS */
-.theme-black-hole #background-effects::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150vmax;
-    height: 150vmax;
-    background-image: radial-gradient(circle, transparent 20%, #000 60%);
-    opacity: 0.3;
-    transform-origin: center;
-    animation: vortex-spin 60s linear infinite;
-}
-@keyframes vortex-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.theme-supernova #background-effects::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 200vw;
-    height: 200vh;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(ellipse at center, rgba(255, 204, 0, 0.2) 0%, rgba(255, 204, 0, 0) 70%);
-    animation: supernova-pulse 5s ease-in-out infinite;
-}
-@keyframes supernova-pulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.2; } 50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.4; } }
-
 /* LISTAS DE ITENS (INFRAESTRUTURA, MELHORIAS) */
-.item-list { display: flex; flex-direction: column; }
 .item-list .item { position: relative; background-color: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background-color 0.2s, box-shadow 0.2s, opacity 0.3s; }
 .item.disabled { opacity: 0.6; background-color: var(--disabled-bg); cursor: not-allowed; }
 .item .item-info { flex-grow: 1; text-align: left; }
@@ -130,8 +99,8 @@ h4.sub-header-alt { margin: 0 0 10px; color: var(--secondary-text-color); }
 #odyssey-svg { width: 100%; max-width: 200px; height: auto; overflow: visible; filter: drop-shadow(0 0 10px var(--glow-color)); transition: filter 1s, transform 1s ease-in-out, opacity 1s; }
 #odyssey-svg.is-launched { animation: ship-launch 2s forwards ease-in; }
 @keyframes ship-launch { 0% { transform: translateY(0) rotate(0deg) scale(1); } 100% { transform: translateY(-80vh) rotate(30deg) scale(0); opacity: 0; } }
-#odyssey-svg.is-wandering { animation: ship-wander 15s ease-in-out infinite; }
-@keyframes ship-wander { 0% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(5px, -8px) rotate(2deg); } 50% { transform: translate(0, 0) rotate(0deg); } 75% { transform: translate(-5px, 8px) rotate(-2deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
+#odyssey-svg.is-active { animation: ship-bob 5s ease-in-out infinite; }
+@keyframes ship-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .ship-part { opacity: 0; transition: opacity 1s ease-in-out; }
 .ship-part.active { opacity: 1; }
 .ship-part path { fill: none; stroke: var(--secondary-text-color); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: all 1s; }
