@@ -55,18 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let stars = [];
 
     // --- CORE GAME LOGIC ---
-    function mainClick(event){const dpc=calculateDPC();addData(dpc);gameState.stats.clicks++;createShockwave();createClickEffect(event,dpc);updateUI()};
+    function mainClick(event){const dpc=calculateDPC();addData(dpc);gameState.stats.clicks++;createShockwave();createClickEffect(event,dpc);};
     function autoClick(){const dpc=calculateDPC();addData(dpc);createAutoClickEffect(dpc);gameState.stats.autoClicks++;};
     function addData(e){gameState.data+=e; gameState.stats.totalData+=e; gameState.stats.totalDataThisPrestige+=e};
     function calculateCost(e,t){return Math.ceil(e*Math.pow(1.15,t))};
     function buyBuilding(e,t){const s=BUILDINGS_DATA.find(e=>e.id===t),a=gameState.buildings[t];if(a.count>=1000)return;let o=1;e.shiftKey&&(o=10);let n=0;for(let i=0;i<o;i++)n+=calculateCost(s.baseCost,a.count+i);if(gameState.data>=n){gameState.data-=n;a.count=Math.min(1000, a.count + o);updateUI()}};
     function buyUpgrade(e){const t=UPGRADES_DATA[e];if(!t||gameState.data<t.cost||gameState.upgrades.includes(e))return;gameState.data-=t.cost,gameState.upgrades.push(e),"auto_clicker_speed"===t.type?gameState.autoClicker.interval/=t.speedMultiplier:"global_multiplier"===t.type&&(gameState.globalMultiplier*=t.multiplier);if(t.type !== 'unlock')showToast(`Upgrade Comprado: ${t.name}!`);updateUI()};
     function buyPrestigeUpgrade(e){const t=PRESTIGE_UPGRADES_DATA[e];if(t&&gameState.prestige.cores>=t.cost&&!gameState.prestigeUpgrades.includes(e)){gameState.prestige.cores-=t.cost,gameState.prestigeUpgrades.push(e),showToast("Upgrade de Kernel Comprado!"),updateUI()}};
-    function calculateDPC(){let e=1;if(gameState.prestigeUpgrades.includes("supernova_shards"))e*=2;const t=calculateDPS();Object.values(UPGRADES_DATA).forEach((s,id)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[id])){if("click"===s.type)e*=s.multiplier;if("click_dps_synergy"===s.type)e+=t*s.multiplier}});e*=gameState.globalMultiplier*(1+getPrestigeBonus());if(Date.now()<gameState.activeAbilities.overclock.active_until)e*=7.77;return e};
-    function calculateDPS(){let e=0;BUILDINGS_DATA.forEach(t=>{if("script"===t.id)return;const s=gameState.buildings[t.id];if(!s||0===s.count)return;let a=(t.baseDps||0)*s.count;Object.values(UPGRADES_DATA).forEach((up,id)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[id])){if("building"===up.type&&up.target===t.id)a*=up.multiplier;if("synergy"===up.type&&up.target===t.id)a*=1+gameState.buildings[up.source].count*up.multiplier_per_source}});e+=a});let mult=gameState.globalMultiplier*(1+getPrestigeBonus())*(1+calculateAchievementBonus());if(gameState.shipLaunched)mult*=1.25;if(gameState.prestigeUpgrades.includes("singularity_compress"))mult*=1.5;if(gameState.prestigeUpgrades.includes("dwarf_forge"))mult*=1.25;const aiUpgrade = UPGRADES_DATA['synergy_ai_all'];if(gameState.upgrades.includes('synergy_ai_all') && gameState.buildings[aiUpgrade.source]?.count > 0) e *= aiUpgrade.multiplier;return e*mult};
+    function calculateDPC(){let e=1;if(gameState.prestigeUpgrades.includes("supernova_shards"))e*=2;const t=calculateDPS();Object.values(UPGRADES_DATA).forEach((s,i)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[i])){if("click"===s.type)e*=s.multiplier;if("click_dps_synergy"===s.type)e+=t*s.multiplier}});e*=gameState.globalMultiplier*(1+getPrestigeBonus());if(Date.now()<gameState.activeAbilities.overclock.active_until)e*=7.77;return e};
+    function calculateDPS(){let e=0;BUILDINGS_DATA.forEach(t=>{if("script"===t.id)return;const s=gameState.buildings[t.id];if(!s||0===s.count)return;let a=(t.baseDps||0)*s.count;Object.values(UPGRADES_DATA).forEach((up,i)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[i])){if("building"===up.type&&up.target===t.id)a*=up.multiplier;if("synergy"===up.type&&up.target===t.id)a*=1+gameState.buildings[up.source].count*up.multiplier_per_source}});e+=a});let mult=gameState.globalMultiplier*(1+getPrestigeBonus())*(1+calculateAchievementBonus());if(gameState.shipLaunched)mult*=1.25;if(gameState.prestigeUpgrades.includes("singularity_compress"))mult*=1.5;if(gameState.prestigeUpgrades.includes("dwarf_forge"))mult*=1.25;const aiUpgrade = UPGRADES_DATA['synergy_ai_all'];if(gameState.upgrades.includes('synergy_ai_all') && gameState.buildings[aiUpgrade.source]?.count > 0) e *= aiUpgrade.multiplier;return e*mult};
     function getPrestigeBonus(){return gameState.prestige.cores*(gameState.prestigeUpgrades.includes("prestige_kernel_power")?.015:.01)};
-    function calculateNextPrestigeCost(cores) { return Math.pow(cores + 1, 2) * 1e6; }
-    function calculatePendingPrestigeCores(){const e=1e6;if(gameState.stats.totalDataThisPrestige<e)return 0;return Math.max(0,Math.floor(Math.pow(gameState.stats.totalDataThisPrestige/e,.5)))};
+    function getPrestigeBaseCost() { return 1e6 * Math.pow(1.5, gameState.stats.prestigeCount); }
+    function calculateNextPrestigeCost(cores) { return getPrestigeBaseCost() * Math.pow(cores + 1, 2); }
+    function calculatePendingPrestigeCores(){const baseCost = getPrestigeBaseCost(); if(gameState.stats.totalDataThisPrestige<baseCost)return 0;return Math.max(0,Math.floor(Math.pow(gameState.stats.totalDataThisPrestige/baseCost,.5)))};
     function prestigeReset(){const e=calculatePendingPrestigeCores();if(!(e<=0)){const playerName=AuthManager.getLoggedInUser();if(!gameState.devMode&&playerName){const t={date:(new Date).toLocaleString(),score:gameState.stats.totalDataThisPrestige,kernels:e,playTime:gameState.stats.playTime-(gameState.stats.lastPrestigePlayTime||0)};gameState.hallOfFame.push(t);ApiManager.submitScore(playerName,gameState.stats.totalData)}const t={...gameState};gameState=defaultGameState(!0);gameState.prestige.cores=t.prestige.cores+e;gameState.stats.prestigeCount=t.stats.prestigeCount+1;showToast(`Sistema Recompilado! Você ganhou ${formatNumber(e,0)} Kernel Cores!`);updateUI()}};
     function handleAbilities(e){DOM["abilities-container"].style.display=gameState.upgrades.includes("unlock_abilities")?"block":"none";const t=Date.now(),s=(gameState.activeAbilities.overclock.cooldown_until-t)/1e3;DOM["ability-overclock"].textContent=s>0?`Overclock (${s.toFixed(0)}s)`:"Overclock",DOM["ability-overclock"].classList.toggle("on-cooldown",s>0);const a=(gameState.activeAbilities.datadump.cooldown_until-t)/1e3;DOM["ability-datadump"].textContent=a>0?`Data Dump (${a.toFixed(0)}s)`:"Data Dump",DOM["ability-datadump"].classList.toggle("on-cooldown",a>0)};
     function activateAbility(e){const t=Date.now();if("overclock"===e&&t>gameState.activeAbilities.overclock.cooldown_until){gameState.activeAbilities.overclock.active_until=t+1e4,gameState.activeAbilities.overclock.cooldown_until=t+6e4,showToast("Overclock ativado! Ganhos de clique x7.77!")}if("datadump"===e&&t>gameState.activeAbilities.datadump.cooldown_until){addData(1800*(calculateDPS()||1)),gameState.activeAbilities.datadump.cooldown_until=t+3e5,showToast(`Data Dump! +${formatNumber(1800*(calculateDPS()||1))} Data!`)} updateUI()};
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM["prestige-button"].style.display=pendingCores>0?"block":"none";
         if(pendingCores>0)DOM["prestige-button"].textContent=`Recompilar (+${formatNumber(pendingCores,0)} Núcleos)`;
         
-        DOM["prestige-progress-container"].style.display=gameState.stats.totalData>=5e5||gameState.stats.prestigeCount>0?"block":"none";
+        DOM["prestige-progress-container"].style.display=gameState.stats.totalData>=getPrestigeBaseCost()/2||gameState.stats.prestigeCount>0?"block":"none";
         const nextCost = calculateNextPrestigeCost(calculatePendingPrestigeCores());
         const progress = Math.min(100, (gameState.stats.totalDataThisPrestige / nextCost) * 100);
         DOM["prestige-progress-bar"].style.width = `${progress}%`;
@@ -185,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MAIN LOOP & SAVE/LOAD ---
     let lastTick=0;
     function gameLoop(e){if(!lastTick)lastTick=e;const t=e-lastTick;lastTick=e,gameState.stats.playTime+=t,addData(calculateDPS()*t/1e3),handleAutoClicker(t),handleAbilities(t),checkAchievements(),updateUI(),updateGameTheme(),drawBackgrounds(),requestAnimationFrame(gameLoop)};
-    function getSaveKey() { const player = AuthManager.getLoggedInUser(); return player ? `quantumOdysseySave_v5.0_${player}` : null; }
+    function getSaveKey() { const player = AuthManager.getLoggedInUser(); return player ? `quantumOdysseySave_v5.1_${player}` : null; }
     function saveGame(){ const key = getSaveKey(); if(key) try { localStorage.setItem(key, JSON.stringify(gameState)); } catch(e) { console.error("Falha ao salvar o jogo:", e); } };
     function loadGame(){ const key = getSaveKey(); if(!key) { gameState = defaultGameState(); return; } let savedData; try { savedData = JSON.parse(localStorage.getItem(key)); } catch { savedData = null; } gameState = defaultGameState(); if(savedData && typeof savedData === 'object' && savedData.stats){ Object.keys(gameState).forEach(k => { if (savedData[k] !== undefined) { if (typeof gameState[k] === 'object' && gameState[k] !== null && !Array.isArray(gameState[k])) { Object.assign(gameState[k], savedData[k]); } else { gameState[k] = savedData[k]; } } }); } }
     
@@ -230,10 +231,12 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM["ability-overclock"].addEventListener("click", ()=>activateAbility("overclock"));
         DOM["ability-datadump"].addEventListener("click", ()=>activateAbility("datadump"));
         DOM["main-menu-button"].addEventListener("click", () => {
-            DOM["modal-screen"].classList.add("active");
-            document.querySelector('.tab-button[data-tab="ranking-content"]').click();
+            if(DOM["main-modal"]) {
+                DOM["main-modal"].classList.add("active");
+                document.querySelector('.tab-button[data-tab="ranking-content"]').click();
+            }
         });
-        DOM["close-modal-button"].addEventListener("click", ()=>DOM["modal-screen"].classList.remove("active"));
+        DOM["close-modal-button"].addEventListener("click", ()=>DOM["main-modal"].classList.remove("active"));
         DOM["close-launch-overlay-button"].addEventListener("click", () => {
             DOM["ship-launch-overlay"].classList.remove("active");
         });

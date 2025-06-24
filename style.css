@@ -14,10 +14,10 @@
     --locked-color: #666;
     --prestige-color: #ff00ff;
 }
-.theme-cosmic { --bg-color: #100818; --main-text-color: #d88aff; --glow-color: #d88aff; --border-color: #aa55ff; --prestige-color: #ffee77; --button-bg: #4a1f70; }
-.theme-singularity { --bg-color: #180808; --main-text-color: #ff8888; --glow-color: #ff5555; --border-color: #cc2222; --prestige-color: #ffddaa; --button-bg: #7d1c1c; }
-.theme-supernova { --bg-color: #181408; --main-text-color: #ffee77; --glow-color: #ffee77; --border-color: #ffcc00; --prestige-color: #aaddff; --button-bg: #80610d; }
-.theme-whitedwarf { --bg-color: #101018; --main-text-color: #ddeeff; --glow-color: #ffffff; --border-color: #bbbbdd; --prestige-color: #ffccff; --button-bg: #5a5a8a; }
+.theme-cosmic { --bg-color: #100818; --main-text-color: #d88aff; --glow-color: #d88aff; --border-color: #aa55ff; --prestige-color: #ffee77; --button-bg: #4a1f70; --unlocked-color: #d88aff;}
+.theme-singularity { --bg-color: #180808; --main-text-color: #ff8888; --glow-color: #ff5555; --border-color: #cc2222; --prestige-color: #ffddaa; --button-bg: #7d1c1c; --unlocked-color: #ff8888;}
+.theme-supernova { --bg-color: #181408; --main-text-color: #ffee77; --glow-color: #ffee77; --border-color: #ffcc00; --prestige-color: #aaddff; --button-bg: #80610d; --unlocked-color: #ffee77;}
+.theme-whitedwarf { --bg-color: #101018; --main-text-color: #ddeeff; --glow-color: #ffffff; --border-color: #bbbbdd; --prestige-color: #ffccff; --button-bg: #5a5a8a; --unlocked-color: #ddeeff;}
 
 * { box-sizing: border-box; user-select: none; }
 body, html { margin: 0; padding: 0; overflow: hidden; background-color: var(--bg-color); font-family: 'Roboto Mono', 'Courier New', monospace; color: var(--main-text-color); transition: background-color 1s; }
@@ -125,4 +125,4 @@ h4.sub-header-alt { margin: 0 0 10px; color: var(--secondary-text-color); }
 #prestige-progress-bar-bg { width: 100%; background-color: #000; border: 1px solid var(--border-color); border-radius: 4px; height: 20px; position: relative; overflow: hidden; }
 #prestige-progress-bar { height: 100%; background-color: var(--prestige-color); width: 0%; transition: width 0.2s linear; }
 #prestige-progress-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: #fff; text-shadow: 1px 1px 2px #000; }
-#dev-panel { position: fixed; bottom: 10px; left: 10px; background: var(--panel-bg); padding: 10px; border-radius: 5px; border: 1px solid var(--accent-color); z-index: 9999; display: none; }
+#dev-panel { position: fixed; bottom: 10px; right: 10px; background: var(--panel-bg); padding: 10px; border-radius: 5px; border: 1px solid var(--accent-color); z-index: 9999; display: none; }
