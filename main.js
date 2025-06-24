@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DATA & CONFIG ---
     const BUILDINGS_DATA=[{id:"script",name:"Auto-Clicker Script",baseCost:15,description:"Clica automaticamente."}, {id:"cpu",name:"CPU Cluster",baseCost:100,baseDps:1.5,description:"+1.5 DPS base."}, {id:"server",name:"Server Farm",baseCost:1100,baseDps:9,description:"+9 DPS base."}, {id:"quantum",name:"Quantum Processor",baseCost:12e3,baseDps:50,description:"+50 DPS base."}, {id:"ai",name:"AI Superintelligence",baseCost:13e4,baseDps:260,description:"+260 DPS base."}, {id:"dyson",name:"Dyson Swarm",baseCost:14e5,baseDps:1400,description:"+1400 DPS base."}];
     const UPGRADES_DATA={'click_1':{name:"Mouse Óptico",description:"Cliques 2x mais eficientes.",cost:100,requirement:()=>!0,type:"click",multiplier:2},'click_2':{name:"Luva Háptica",description:"Cliques 2x mais eficientes.",cost:500,requirement:e=>e.upgrades.includes("click_1"),type:"click",multiplier:2},'synergy_click_dps':{name:"Interface Neural Direta",description:"Cada clique também gera 1% do seu DPS.",cost:1e4,requirement:e=>e.buildings.cpu.count>=10,type:"click_dps_synergy",multiplier:.01},'script_1':{name:"Código Otimizado",description:"Scripts clicam 25% mais rápido.",cost:100,requirement:e=>e.buildings.script.count>=1,type:"auto_clicker_speed",speedMultiplier:1.25},'script_2':{name:"Scripts Polimórficos",description:"Scripts clicam 40% mais rápido.",cost:500,requirement:e=>e.buildings.script.count>=5,type:"auto_clicker_speed",speedMultiplier:1.4},'cpu_1':{name:"Sistema de Cooling",description:"CPUs 2x mais eficientes.",cost:1e3,requirement:e=>e.buildings.cpu.count>=1,type:"building",target:"cpu",multiplier:2},'cpu_tier1':{name:"Arquitetura de CPU Avançada",description:"CPUs permanentemente 2x mais eficientes.",cost:5e4,requirement:e=>e.buildings.cpu.count>=25,type:"building",target:"cpu",multiplier:2},'server_tier1':{name:"Backbone de Fibra Ótica",description:"Server Farms permanentemente 2x mais eficientes.",cost:6e5,requirement:e=>e.buildings.server.count>=25,type:"building",target:"server",multiplier:2},'synergy_server_cpu':{name:"Otimização de Virtualização",description:"Cada Server Farm aumenta a produção de CPUs em 1%.",cost:75e3,requirement:e=>e.buildings.server.count>=10&&e.buildings.cpu.count>=25,type:"synergy",source:"server",target:"cpu",multiplier_per_source:.01},'synergy_ai_all':{name:"IA de Otimização de Rede",description:"A AI Superintelligence aumenta a produção de TODOS os outros edifícios em 10%.",cost:1e7,requirement:e=>e.buildings.ai.count>=1,type:"synergy_global",source:"ai",multiplier:1.1},'global_1':{name:"Compressão Global",description:"Dobra (2x) toda a sua geração de Data (Cliques e DPS).",cost:5e4,requirement:e=>e.buildings.quantum.count>=1,type:"global_multiplier",multiplier:2},'unlock_abilities':{name:"Desbloquear Processador de Efeitos",description:"Habilita as habilidades ativas Overclock e Data Dump.",cost:25e3,requirement:e=>e.buildings.quantum.count>=1,type:"unlock",target:"abilities"}};
-    const PRESTIGE_UPGRADES_DATA={'prestige_start_scripts':{name:"Protocolo de Inicialização",description:"Comece cada nova recompilação com 10 Scripts.",cost:1,requirement:()=>true, prestigeReq:1},'prestige_kernel_power':{name:"Kernel Supercarregado",description:"Cada Kernel Core agora dá +1.5% de bônus em vez de +1%.",cost:10,requirement:()=>true, prestigeReq:1},'singularity_compress':{name:"Compressão de Singularidade",description:"Aumenta todo o DPS em +50%.",cost:25,requirement:()=>true, prestigeReq:3},'supernova_shards':{name:"Fragmentos de Supernova",description:"Aumenta o DPC base em +100%.",cost:100,requirement:()=>true, prestigeReq:10},'dwarf_forge':{name:"Forja Anã",description:"Aumenta a eficiência de todos os edifícios em 25%.",cost:250,requirement:()=>true, prestigeReq:15}};
+    const PRESTIGE_UPGRADES_DATA={'prestige_start_scripts':{name:"Protocolo de Inicialização",description:"Comece cada nova recompilação com 10 Scripts.",cost:1,requirement:()=>true, prestigeReq:1},'prestige_kernel_power':{name:"Kernel Supercarregado",description:"Cada Kernel Core agora dá +1.5% de bônus em vez de +1%.",cost:10,requirement:()=>true, prestigeReq:1},'singularity_compress':{name:"Compressão de Singularidade",description:"Aumenta todo o DPS em +50%.",cost:25,requirement:()=>true, prestigeReq:3},'blackhole_synergy':{name:"Sinergia de Horizonte",description:"Aumenta o bônus de sinergia em 50%.",cost:50,requirement:()=>true,prestigeReq:7},'supernova_shards':{name:"Fragmentos de Supernova",description:"Aumenta o DPC base em +100%.",cost:100,requirement:()=>true, prestigeReq:10},'dwarf_forge':{name:"Forja Anã",description:"Aumenta a eficiência de todos os edifícios em 25%.",cost:250,requirement:()=>true, prestigeReq:15}};
     const ACHIEVEMENTS_DATA={'ach_data_m':{name:"Megabyte",description:"Junte 1,000,000 Data.",condition:e=>e.stats.totalDataThisPrestige>=1e6,bonus:.002},'ach_ship_launched':{name:"Odyssey Lançada",description:"Construa e lance a nave (250 de cada infraestrutura).",condition:e=>e.shipLaunched,bonus:.1},'ach_prestige_1':{name:"Recompilado",description:"Recompile pela 1ª vez.",condition:e=>e.stats.prestigeCount>=1,bonus:.05},'ach_prestige_cosmic':{name:"Era Cósmica",description:"Alcance a Era Cósmica (1 Recompilação).",condition:e=>e.stats.prestigeCount>=1,bonus:.05},'ach_prestige_singularity':{name:"Era da Singularidade",description:"Alcance a Era da Singularidade (3 Recompilações).",condition:e=>e.stats.prestigeCount>=3,bonus:.05},'ach_prestige_blackhole':{name:"Horizonte de Eventos",description:"Alcance a Era do Buraco Negro (7 Recompilações).",condition:e=>e.stats.prestigeCount>=7,bonus:.1},'ach_prestige_supernova':{name:"Era da Supernova",description:"Alcance a Era da Supernova (10 Recompilações).",condition:e=>e.stats.prestigeCount>=10,bonus:.1},'ach_prestige_whitedwarf':{name:"Era da Anã Branca",description:"Alcance a Era da Anã Branca (15 Recompilações).",condition:e=>e.stats.prestigeCount>=15,bonus:.15},'ach_dev_mode':{name:"A Chave Mestra",description:"Você encontrou o acesso de superusuário.",condition:e=>e.devMode,bonus:0}};
 
     // --- GAME STATE ---
@@ -64,13 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function buyUpgrade(e){const t=UPGRADES_DATA[e];if(!t||gameState.data<t.cost||gameState.upgrades.includes(e))return;gameState.data-=t.cost,gameState.upgrades.push(e),"auto_clicker_speed"===t.type?gameState.autoClicker.interval/=t.speedMultiplier:"global_multiplier"===t.type&&(gameState.globalMultiplier*=t.multiplier);if(t.type !== 'unlock')showToast(`Upgrade Comprado: ${t.name}!`)};
     function buyPrestigeUpgrade(e){const t=PRESTIGE_UPGRADES_DATA[e];if(t&&gameState.prestige.cores>=t.cost&&!gameState.prestigeUpgrades.includes(e)){gameState.prestige.cores-=t.cost,gameState.prestigeUpgrades.push(e),showToast("Upgrade de Kernel Comprado!")}};
     function calculateDPC(){let e=1;if(gameState.prestigeUpgrades.includes("supernova_shards"))e*=2;const t=calculateDPS();Object.values(UPGRADES_DATA).forEach((s,i)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[i])){if("click"===s.type)e*=s.multiplier;if("click_dps_synergy"===s.type)e+=t*s.multiplier}});e*=gameState.globalMultiplier*(1+getPrestigeBonus());if(Date.now()<gameState.activeAbilities.overclock.active_until)e*=7.77;return e};
-    function calculateDPS(){let e=0;BUILDINGS_DATA.forEach(t=>{if("script"===t.id)return;const s=gameState.buildings[t.id];if(!s||0===s.count)return;let a=(t.baseDps||0)*s.count;Object.values(UPGRADES_DATA).forEach((up,i)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[i])){if("building"===up.type&&up.target===t.id)a*=up.multiplier;if("synergy"===up.type&&up.target===t.id)a*=1+gameState.buildings[up.source].count*up.multiplier_per_source}});e+=a});let mult=gameState.globalMultiplier*(1+getPrestigeBonus())*(1+calculateAchievementBonus());if(gameState.shipLaunched)mult*=1.25;if(gameState.prestigeUpgrades.includes("singularity_compress"))mult*=1.5;if(gameState.prestigeUpgrades.includes("dwarf_forge"))mult*=1.25;const aiUpgrade = UPGRADES_DATA['synergy_ai_all'];if(gameState.upgrades.includes('synergy_ai_all') && gameState.buildings[aiUpgrade.source]?.count > 0) e *= aiUpgrade.multiplier;return e*mult};
+    function calculateDPS(){let e=0;BUILDINGS_DATA.forEach(t=>{if("script"===t.id)return;const s=gameState.buildings[t.id];if(!s||0===s.count)return;let a=(t.baseDps||0)*s.count;Object.values(UPGRADES_DATA).forEach((up,i)=>{if(gameState.upgrades.includes(Object.keys(UPGRADES_DATA)[i])){if("building"===up.type&&up.target===t.id)a*=up.multiplier;if("synergy"===up.type&&up.target===t.id){const synergyBonus=gameState.prestigeUpgrades.includes("blackhole_synergy")?1.5:1;a*=1+gameState.buildings[up.source].count*up.multiplier_per_source*synergyBonus}}});e+=a});let mult=gameState.globalMultiplier*(1+getPrestigeBonus())*(1+calculateAchievementBonus());if(gameState.shipLaunched)mult*=1.25;if(gameState.prestigeUpgrades.includes("singularity_compress"))mult*=1.5;if(gameState.prestigeUpgrades.includes("dwarf_forge"))mult*=1.25;const aiUpgrade = UPGRADES_DATA['synergy_ai_all'];if(gameState.upgrades.includes('synergy_ai_all') && gameState.buildings[aiUpgrade.source]?.count > 0) e *= aiUpgrade.multiplier;return e*mult};
     function getPrestigeBonus(){return gameState.prestige.cores*(gameState.prestigeUpgrades.includes("prestige_kernel_power")?.015:.01)};
     function getPrestigeBaseCost() { return 1e6 * Math.pow(1.5, gameState.stats.prestigeCount); }
-    function calculateNextPrestigeCost(cores) { return getPrestigeBaseCost() * Math.pow(cores + 1, 2); }
     function calculatePendingPrestigeCores(){const baseCost=getPrestigeBaseCost();if(gameState.stats.totalDataThisPrestige<baseCost)return 0;return Math.max(0,Math.floor(Math.pow(gameState.stats.totalDataThisPrestige/baseCost,.5)))};
-    function prestigeReset(){const e=calculatePendingPrestigeCores();if(!(e<=0)){const playerName=AuthManager.getLoggedInUser();if(!gameState.devMode&&playerName){const t={date:(new Date).toLocaleString(),score:gameState.stats.totalDataThisPrestige,kernels:e,playTime:gameState.stats.playTime-(gameState.stats.lastPrestigePlayTime||0)};gameState.hallOfFame.push(t);ApiManager.submitScore(playerName,gameState.stats.totalData)}const t={...gameState};gameState=defaultGameState(!0);gameState.prestige.cores=t.prestige.cores+e;gameState.stats.prestigeCount=t.stats.prestigeCount+1;showToast(`Sistema Recompilado! Você ganhou ${formatNumber(e,0)} Kernel Cores!`);updateUI()}};
-    function handleAbilities(e){DOM.abilities.style.display=gameState.upgrades.includes("unlock_abilities")?"block":"none";const t=Date.now(),s=(gameState.activeAbilities.overclock.cooldown_until-t)/1e3;DOM['ability-overclock'].textContent=s>0?`Overclock (${s.toFixed(0)}s)`:"Overclock",DOM['ability-overclock'].classList.toggle("on-cooldown",s>0);const a=(gameState.activeAbilities.datadump.cooldown_until-t)/1e3;DOM['ability-datadump'].textContent=a>0?`Data Dump (${a.toFixed(0)}s)`:"Data Dump",DOM['ability-datadump'].classList.toggle("on-cooldown",a>0)};
+    function prestigeReset(){const e=calculatePendingPrestigeCores();if(!(e<=0)){const playerName=AuthManager.getLoggedInUser();if(!gameState.devMode&&playerName){const t={date:(new Date).toLocaleString(),score:gameState.stats.totalDataThisPrestige,kernels:e,playTime:gameState.stats.playTime-(gameState.stats.lastPrestigePlayTime||0)};gameState.hallOfFame.push(t);ApiManager.submitScore(playerName,gameState.stats.totalData)}const t={...gameState};gameState=defaultGameState(!0);gameState.prestige.cores=t.prestige.cores+e;gameState.stats.prestigeCount=t.stats.prestigeCount+1;showToast(`Sistema Recompilado! Você ganhou ${formatNumber(e,0)} Kernel Cores!`);updateUI(true)}};
+    function handleAbilities(e){if(!DOM.abilities) return; DOM.abilities.style.display=gameState.upgrades.includes("unlock_abilities")?"block":"none";const t=Date.now(),s=(gameState.activeAbilities.overclock.cooldown_until-t)/1e3;DOM['ability-overclock'].textContent=s>0?`Overclock (${s.toFixed(0)}s)`:"Overclock",DOM['ability-overclock'].classList.toggle("on-cooldown",s>0);const a=(gameState.activeAbilities.datadump.cooldown_until-t)/1e3;DOM['ability-datadump'].textContent=a>0?`Data Dump (${a.toFixed(0)}s)`:"Data Dump",DOM['ability-datadump'].classList.toggle("on-cooldown",a>0)};
     function activateAbility(e){const t=Date.now();if("overclock"===e&&t>gameState.activeAbilities.overclock.cooldown_until){gameState.activeAbilities.overclock.active_until=t+1e4,gameState.activeAbilities.overclock.cooldown_until=t+6e4,showToast("Overclock ativado! Ganhos de clique x7.77!")}if("datadump"===e&&t>gameState.activeAbilities.datadump.cooldown_until){addData(1800*(calculateDPS()||1)),gameState.activeAbilities.datadump.cooldown_until=t+3e5,showToast(`Data Dump! +${formatNumber(1800*(calculateDPS()||1))} Data!`)}};
     function handleAutoClicker(e){if(gameState.buildings.script.count>0&&(gameState.autoClicker.timer+=e,gameState.autoClicker.timer>=gameState.autoClicker.interval)){const clicks=Math.floor(gameState.autoClicker.timer/gameState.autoClicker.interval);for(let t=0;t<clicks;t++)autoClick();gameState.autoClicker.timer%=gameState.autoClicker.interval}};
     
@@ -90,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastUIUpdate=0;
     function updateUI(force = false){
         const t=performance.now();
-        if(!force && t-lastUIUpdate<200 && document.activeElement.tagName!=="INPUT")return; lastUIUpdate=t;
+        if(!force && t-lastUIUpdate<200)return; lastUIUpdate=t;
         
         DOM['data-count'].textContent=formatNumber(gameState.data);
         DOM['dps-count'].textContent=formatNumber(calculateDPS());
@@ -106,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const basePrestigeCost = getPrestigeBaseCost();
         DOM['prestige-progress-container'].style.display=gameState.stats.totalDataThisPrestige>=basePrestigeCost/5||gameState.stats.prestigeCount>0?"block":"none";
-        const nextCost = calculateNextPrestigeCost(pendingCores);
         const progress = canPrestige ? 100 : Math.min(100, (gameState.stats.totalDataThisPrestige / basePrestigeCost) * 100);
         DOM['prestige-progress-bar'].style.width = `${progress}%`;
         DOM['prestige-progress-text'].textContent = `${formatNumber(gameState.stats.totalDataThisPrestige)} / ${formatNumber(basePrestigeCost)}`;
@@ -115,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         BUILDINGS_DATA.forEach(b => {
             const el = DYNAMIC_DOM.buildings[b.id];
+            if (!el) return;
             const state = gameState.buildings[b.id];
             const cost = calculateCost(b.baseCost, state.count);
             const isMax = state.count >= 1000;
@@ -126,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(UPGRADES_DATA).forEach(id=>{
             const up=UPGRADES_DATA[id];
             const el = DYNAMIC_DOM.upgrades[id];
+            if (!el) return;
             const shouldShow = !gameState.upgrades.includes(id) && up.requirement(gameState);
             el.el.style.display = shouldShow ? 'flex' : 'none';
             if(shouldShow) el.el.classList.toggle("disabled",gameState.data<up.cost);
@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(PRESTIGE_UPGRADES_DATA).forEach(id=>{
             const up=PRESTIGE_UPGRADES_DATA[id];
             const el = DYNAMIC_DOM.prestigeUpgrades[id];
+            if (!el) return;
             const shouldShow = !gameState.prestigeUpgrades.includes(id) && gameState.stats.prestigeCount >= up.prestigeReq;
             el.el.style.display = shouldShow ? 'flex' : 'none';
             if(shouldShow) el.el.classList.toggle("disabled",gameState.prestige.cores<up.cost);
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.className = "item";
             el.onclick = (e) => buyBuilding(e, b.id);
             el.innerHTML = `<div class="item-info"><h3>${b.name}</h3><p>${b.description}</p><p>Custo: <span class="cost"></span></p></div><span class="item-count"></span>`;
-            DOM.buildings.appendChild(el);
+            DOM['buildings-container'].appendChild(el);
             DYNAMIC_DOM.buildings[b.id] = { el: el, cost: el.querySelector('.cost'), count: el.querySelector('.item-count') };
         });
 
@@ -219,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.display = 'none';
             el.onclick = () => buyUpgrade(id);
             el.innerHTML = `<div class="item-info"><h3>${up.name}</h3><p>Custo: ${formatNumber(up.cost)}</p><small>${up.description}</small></div>`;
-            DOM.upgrades.appendChild(el);
+            DOM['upgrades-container'].appendChild(el);
             DYNAMIC_DOM.upgrades[id] = { el: el };
         });
 
@@ -227,12 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
         header.className = 'sub-header';
         header.textContent = 'Upgrades de Kernel';
         header.style.display = 'none';
-        DOM.prestigeUpgradesContainer.appendChild(header);
+        DOM['prestige-upgrades-container'].appendChild(header);
         DOM.prestigeUpgradesHeader = header;
         
         const prestigeList = document.createElement('div');
         prestigeList.className = 'item-list';
-        DOM.prestigeUpgradesContainer.appendChild(prestigeList);
+        DOM['prestige-upgrades-container'].appendChild(prestigeList);
 
         Object.keys(PRESTIGE_UPGRADES_DATA).forEach(id => {
             const up = PRESTIGE_UPGRADES_DATA[id];
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init(){
-        const SELECTORS = ['data-count','kernel-cores-count','prestige-bonus','auto-clicks-per-sec','dps-count','dpc-count','data-orb','buildings-container','upgrades-container','prestige-upgrades-container','abilities-container','ability-overclock','ability-datadump','menu-buttons-container','main-menu-button','prestige-button','toast-container','main-modal','close-modal-button','main-container','player-name-input','save-name-button','name-modal','prestige-progress-container','prestige-progress-bar','prestige-progress-text','dev-panel','dev-add-data','dev-add-kernels','dev-reset-cooldowns','tabs', 'ship-launch-overlay', 'close-launch-overlay-button', 'odyssey-svg'];
+        const SELECTORS = ['background-effects','data-count','kernel-cores-count','prestige-bonus','auto-clicks-per-sec','dps-count','dpc-count','data-orb','buildings-container','upgrades-container','prestige-upgrades-container','abilities-container','ability-overclock','ability-datadump','menu-buttons-container','main-menu-button','prestige-button','toast-container','main-modal','close-modal-button','main-container','player-name-input','save-name-button','name-modal','prestige-progress-container','prestige-progress-bar','prestige-progress-text','dev-panel','dev-add-data','dev-add-kernels','dev-reset-cooldowns','tabs', 'ship-launch-overlay', 'close-launch-overlay-button', 'odyssey-svg'];
         SELECTORS.forEach(id => DOM[id] = document.getElementById(id));
 
         const loggedInUser = AuthManager.getLoggedInUser();
